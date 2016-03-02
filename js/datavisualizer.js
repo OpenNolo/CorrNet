@@ -2,8 +2,9 @@ var DataVisualizer = function (visualization) {
   this.timestamp = 0;
   this.nodes = [];
   this.links = [];
-  this.graphs = [];
+  this.graphs = []; //not so much sense
 
+  this.temp = 1;
 };
 /*
 // generates nodes exploring the indices in all links
@@ -156,8 +157,19 @@ DataVisualizer.prototype.visualize = function() {
   graph.nodes = this.nodes[this.timestamp];
   graph.links = this.links[this.timestamp];
   this.graphs[this.timestamp] = new Graph("#graph", graph);
+  this.activeGraph = this.graphs[this.timestamp];
   new GraphZoomButton("#graph", this.graphs[this.timestamp], this.timestamp);
   new GraphDeZoomButton("#graph", this.graphs[this.timestamp], this.timestamp);
 
   this.timestamp++;
+};
+
+// Change timestamp of the visualized graph
+DataVisualizer.prototype.change = function() {
+  var graph = {};
+  graph.nodes = this.nodes[this.temp];
+  graph.links = this.links[this.temp];
+  console.log(graph);
+  this.activeGraph.change(graph);
+  this.temp++;
 };

@@ -1,4 +1,5 @@
 var Graph = function(location, graph) { // maybe later not pass for initialization, only use the prototype to update, also for hte first timestamp! ;)
+  var that = this;
 
   console.log(graph);
 
@@ -24,7 +25,7 @@ var Graph = function(location, graph) { // maybe later not pass for initializati
   .size([width, height]); */
 
   // Mine tries
-  var force = d3.layout.force()
+  this.force = d3.layout.force()
   .charge(-1)
   //.linkDistance(100)
   .gravity(0)
@@ -42,7 +43,7 @@ var Graph = function(location, graph) { // maybe later not pass for initializati
    return (1 - link.weight) * 3000; // try also exponential
  });*/
 
-force.linkDistance(function(link) {
+this.force.linkDistance(function(link) {
    return (1 - link.weight) * 4000; // try also exponential
  });
 
@@ -52,12 +53,12 @@ this.svg = d3.select(location).append("svg")
 //.attr("viewBox", "0 0 800 400")
 .attr("viewBox", this.svgR+" "+this.svgT+" "+this.svgW+" "+this.svgH);
 
-force
+this.force
 .nodes(graph.nodes)
 .links(graph.links)
 .start();
 
-var link = this.svg.selectAll(".link")
+this.link = this.svg.selectAll(".link")
 .data(graph.links)
 .enter().append("line")
 .attr("class", "link")
@@ -69,13 +70,13 @@ var node = this.svg.selectAll(".node")
 .attr("class", "node")
 .attr("r", 5)
 .style("fill", function(d) { return color(d.community); })
-.call(force.drag);
+.call(this.force.drag);
 
 node.append("title")
 .text(function(d) { return d.name; });
 
-force.on("tick", function() {
-  link.attr("x1", function(d) { return d.source.x; })
+this.force.on("tick", function() {
+  that.link.attr("x1", function(d) { return d.source.x; })
   .attr("y1", function(d) { return d.source.y; })
   .attr("x2", function(d) { return d.target.x; })
   .attr("y2", function(d) { return d.target.y; });
@@ -95,4 +96,71 @@ Graph.prototype.resizeForceGraph =  function (amount) {
   this.svgW = this.svgW + amount;
   this.svgH = this.svgH + amount;
   this.svg.attr("viewBox", this.svgR+" "+this.svgT+" "+this.svgW+" "+this.svgH);
+};
+
+Graph.prototype.change = function(newData) {
+  //console.log('test');
+  console.log(newData);
+
+  console.log(this.link);
+
+  for(i = 0; i < 120; i++) {
+    console.log(this.link[0][i].__data__.value);
+    console.log(newData.links[i].value);
+    this.link[0][i].__data__.weight = newData.links[i].weight;
+  }
+
+  //this.force.linkDistance(100);
+
+  /*
+  console.log(newData.links);
+
+  this.force
+  .nodes(newData.nodes)
+  .links(newData.links)
+  .start();
+
+
+  this.svg.selectAll(".link")
+  .data(newData.links)
+  .enter().append("line")
+  .attr("class", "link")
+  .style("stroke-width", function(d) { return Math.sqrt(d.value); });
+
+  /*
+  this.svg.selectAll(".node")
+  .data(newData.nodes)
+  .enter().append("circle")
+  .attr("class", "node")
+  .attr("r", 5)
+  .style("fill", function(d) { return color(d.group); })
+  .call(this.force.drag);
+
+
+  this.svg.selectAll(".node").append("title")
+  .text(function(d) { return d.name; });
+  */
+
+/*
+  this.force.linkDistance(function(d) {
+   return d.value; // try also exponential
+ });*/
+
+this.force.start();
+
+/*
+this.force.linkDistance(function(d) {
+   return d.value*10; // try also exponential
+ });*/
+  /*var circle = this.svg.selectAll("circle")
+  .data(newData);
+
+  circle.enter().append("circle")
+  .attr("r", 2.5);
+
+  circle
+  .attr("cx", function(d) { return d.x; })
+  .attr("cy", function(d) { return d.y; });
+
+  circle.exit().remove();*/
 };
