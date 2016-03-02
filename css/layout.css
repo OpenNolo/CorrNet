@@ -1,0 +1,34 @@
+html {
+ width: 100%;
+ height: 100%;
+ margin: 0px;
+ padding: 0px;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  padding: 0px;
+  margin: 0px;
+}
+
+.tries {
+  width: 33%;
+  height: 100%;
+}
+
+#graph {
+  width: 100%;
+}
+
+/*
+#main {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  padding: 0px;
+}
+
+div {
+}
+*/
