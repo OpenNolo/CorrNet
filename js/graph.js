@@ -1,4 +1,4 @@
-var Graph = function(location, graph) { // maybe later not pass for initialization, only use the prototype to update, also for hte first timestamp! ;)
+var Graph = function(location, graph, projection_location) { // maybe later not pass for initialization, only use the prototype to update, also for hte first timestamp! ;)
   var that = this;
 
   console.log(graph);
@@ -51,6 +51,7 @@ this.svg = d3.select(location).append("svg")
 .style("width","100%")
 .style("height","100%")
 //.attr("viewBox", "0 0 800 400")
+.style("background-color", "#999999")
 .attr("viewBox", this.svgR+" "+this.svgT+" "+this.svgW+" "+this.svgH);
 
 this.force
@@ -62,9 +63,11 @@ this.link = this.svg.selectAll(".link")
 .data(graph.links)
 .enter().append("line")
 .attr("class", "link")
+// don't put stroke for standard grey
+.style("stroke", "black")
 .style("stroke-width", function(d) { return Math.sqrt(d.value); });
 
-var node = this.svg.selectAll(".node")
+this.node = this.svg.selectAll(".node")
 .data(graph.nodes)
 .enter().append("circle")
 .attr("class", "node")
@@ -72,7 +75,7 @@ var node = this.svg.selectAll(".node")
 .style("fill", function(d) { return color(d.community); })
 .call(this.force.drag);
 
-node.append("title")
+this.node.append("title")
 .text(function(d) { return d.name; });
 
 this.force.on("tick", function() {
@@ -81,18 +84,59 @@ this.force.on("tick", function() {
   .attr("x2", function(d) { return d.target.x; })
   .attr("y2", function(d) { return d.target.y; });
 
-    /*node.attr("cx", function(d) { return d.x; })
+    /*that.node.attr("cx", function(d) { return d.x; })
     .attr("cy", function(d) { return d.y; });*/
 
-    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+    that.node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   });
+
+  // Create the projection
+  this.projection = new Projection(projection_location, graph.nodes);
+
+  // On click change projection
+  this.node.on("click", function(d) {
+    console.log(d);
+    that.projection.setNode(d);
+
+    if(!d.on) {
+      d.on = true;
+    } else {
+      d.on = false;
+    }
+
+    // Update visualization of ons
+    that.svg.selectAll("circle")
+    .transition()
+    .duration(500)
+    .style("stroke", function(d) {
+      if(d.on) {
+        return "black";
+      }
+    })
+    .style("stroke-width", function(d) {
+      if(d.on) {
+        return 5;
+      }
+    });
+
+  });
+
+
+  /*
+  // On hover ...
+  this.node.on("mouseover", function(d) {
+
+
+  };
+  */
 
 };
 
+
 Graph.prototype.resizeForceGraph =  function (amount) {
-  console.log('innnn');
-  this.svgR = this.svgR - amount/4;
-  this.svgT = this.svgT - amount/4;
+    console.log('innnn');
+  //this.svgR = this.svgR - amount/4;
+  //this.svgT = this.svgT - amount/4;
   this.svgW = this.svgW + amount;
   this.svgH = this.svgH + amount;
   this.svg.attr("viewBox", this.svgR+" "+this.svgT+" "+this.svgW+" "+this.svgH);

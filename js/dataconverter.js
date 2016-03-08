@@ -1,43 +1,11 @@
 // module that implements convertion functions starting from an array of files
 
 var DataConverter = function() {
-  //this.timestamp = 0; // maybe better in data manager
-  // maybe istantiate data manager here
 };
 
-// functions that converts data without grouping to JSON and return the JSON,
-// in order to have it in global scope
-/*DataConverter.prototype.pairToJSON = function(path) {
-  var json = [];
-  var items;
-  this.timestamp++;
-  var timestamp = this.timestamp;
-
-  $.get(path, function(data) {
-    items = data.split('\n');
-    console.log(items);
-    for(var i in items) {
-      var line = items[i].split('\t');
-      if(line[0] != "") {
-        console.log(line);
-        lineParse = '{' +'"source" : "' + line[0] + '",'
-        + '"target" : "' + line[1] + '",'
-        + '"weight" : "' + line[2] + '"}';
-        //+ '"timestamp" : "' + timestamp + '"}';
-        console.log(lineParse);
-        json.push(JSON.parse(lineParse));
-      }
-    }
-    console.log(json);
-    return json;
-  });
-};*/
-//dc.pairsToJSON('http://localhost:8888/Desktop/Visualization/App/cor_weights-t000001.pair');
 
 // functions that converts data without grouping to JSON and return the JSON,
 // in order to have it in global scope
-
-
 DataConverter.prototype.convertFiles = function(files) {
   var json = [];
 
@@ -52,9 +20,6 @@ DataConverter.prototype.convertFile = function(data) {
   var json = [];
   var items;
   var lineParse = "";
-  //this.timestamp++;
-  //var timestamp = this.timestamp;
-  //console.log(data);
 
   items = data.split('\n');
   //console.log(items);
@@ -92,7 +57,7 @@ DataConverter.prototype.convertCommunitiesCompactFile = function(data) {
   var json = [];
   var files = [];
 
-  var lines = data[0].split('\n');
+  var lines = data.split('\n');
 
   var j = lines[0].split('\t')[0];
   var file = [];
@@ -152,12 +117,26 @@ DataConverter.prototype.convertCommunitiesFile = function(data, splitted) {
   return json;
 };
 
-/*
-DataConverter.prototype.pairsToJSON(nTimestamp) = {
-  var json =[];
-  for(var i = 0; i < nTimestamp; i++) {
+// Convert a file containing coordinates in JSON positions
+DataConverter.prototype.convertCoordinatesFile = function(file) {
+  var json = [];
+  var items;
+  var lineParse = "";
 
+  items = file.split('\n');
+  console.log(items);
+
+  for(var i in items) {
+    var line = items[i].split('\t');
+    if(line[0] != "" && line[0] != "undefined" && line[1] != "" && line[1] != "undefined") {
+      lineParse = '{' +  '"name" : ' + i + ',' + '"x" : ' + line[0] + ',' + '"y" : ' + line[1] + '}';
+      console.log(lineParse);
+
+      json.push(JSON.parse(lineParse));
+    }
   }
-  'http://localhost:8888/Desktop/Visualization/App/cor_weights-t000001.pair'
-}
-*/
+
+  console.log(json);
+
+  return json;
+};
